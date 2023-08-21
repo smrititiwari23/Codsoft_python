@@ -1,0 +1,79 @@
+import tkinter as tk
+import math
+
+class CalculatorApp(tk.Tk):
+    def _init_(self):
+        super()._init_()
+        self.title("Awesome Calculator")
+        self.geometry("400x600")
+        self.configure(bg="#f0f0f0")  # Light gray background
+
+        self.result_var = tk.StringVar()
+
+        self.create_widgets()
+        self.previous_calculations = []
+
+    def create_widgets(self):
+        # Entry widget to display the result
+        result_entry = tk.Entry(self, textvariable=self.result_var, font=("Arial", 24), justify='right', bd=10)
+        result_entry.pack(pady=20, padx=10, fill=tk.BOTH)
+
+        # Frame to hold buttons
+        button_frame = tk.Frame(self, bg='#f0f0f0')
+        button_frame.pack()
+
+        # Buttons for numbers and operations
+        buttons = [
+            ('7', '8', '9', '/'),
+            ('4', '5', '6', '*'),
+            ('1', '2', '3', '-'),
+            ('0', '.', '+'),
+            ('√', '^2', 'C', )
+        ]
+
+        for row in buttons:
+            frame = tk.Frame(button_frame, bg='#f0f0f0')
+            frame.pack()
+
+            for btn_text in row:
+                btn = tk.Button(frame, text=btn_text, font=("Arial", 14), width=8, height=3, command=lambda text=btn_text: self.on_button_click(text))
+                btn.pack(side=tk.LEFT, padx=5, pady=5)
+
+        # Equal button
+        equal_btn = tk.Button(button_frame, text='=', font=("Arial", 14), width=8, height=3, command=self.on_equal_click)
+        equal_btn.pack(side=tk.LEFT, padx=5, pady=5)
+
+    def on_button_click(self, text):
+        current_value = self.result_var.get()
+        if text == 'C':
+            self.result_var.set('')
+        elif text == 'sqrt':
+            try:
+                num = float(current_value)
+                if num >= 0:
+                    result = math.sqrt(num)
+                    self.result_var.set(result)
+                else:
+                    self.result_var.set("Error")
+            except ValueError:
+                self.result_var.set("Error")
+        elif text == 'square':
+            try:
+                num = float(current_value)
+                result = num ** 2
+                self.result_var.set(result)
+            except Exception as e:
+                self.result_var.set("Error")
+        else:
+            self.result_var.set(current_value + text)
+
+    def on_equal_click(self):
+        try:
+            result = eval(self.result_var.get())
+            self.result_var.set(result)
+            self.previous_calculations.append(f"{self.result_var.get()} = {result}")
+        except Exception as e:
+            self.result_var.set("Error")
+if _name_ == "_main_":
+    app = CalculatorApp()
+    app.mainloop()
